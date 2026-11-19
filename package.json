@@ -1,0 +1,43 @@
+{
+  "name": "adobestock-4k-30fps-studio",
+  "version": "1.0.0",
+  "description": "AdobeStock 4K 30fps Studio - 4K 30 FPS Seamless 15s Loop Video Generator using Google Gemini API",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-exe": "electron-builder --win portable",
+    "build-installer": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "@google/genai": "latest",
+    "dotenv": "^17.2.3",
+    "mp4-muxer": "^5.2.2",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.adobestock.adobestock4k30fpsstudio",
+    "productName": "AdobeStock 4K 30fps Studio",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "AdobeStock-4K-30fps-Studio.exe"
+    }
+  }
+}
