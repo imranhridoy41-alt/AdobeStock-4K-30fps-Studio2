@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdobeStock 4K 30fps Studio — 4K 30 FPS Loop Studio</title>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #09090b;
+      color: #f4f4f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 24px;
+      background: #111114;
+      border-bottom: 1px solid #27272a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+
+    .badge {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-family: Consolas, monospace;
+    }
+
+    .status-pill {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid #27272a;
+      background: #18181b;
+    }
+
+    .status-ok {
+      color: #34d399;
+      border-color: #065f46;
+      background: rgba(6, 78, 59, 0.35);
+    }
+
+    .status-err {
+      color: #f87171;
+      border-color: #7f1d1d;
+      background: rgba(127, 29, 29, 0.35);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 20px;
+      padding: 20px 24px;
+      flex: 1;
+    }
+
+    .card {
+      background: #111114;
+      border: 1px solid #27272a;
+      border-radius: 16px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fafafa;
+    }
+
+    label {
+      font-size: 12px;
+      color: #a1a1aa;
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    textarea, select, input {
+      width: 100%;
+      background: #18181b;
+      border: 1px solid #3f3f46;
+      color: #f4f4f5;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    textarea:focus, select:focus {
+      border-color: #f59e0b;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #09090b;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: #27272a;
+      color: #f4f4f5;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: #3f3f46;
+    }
+
+    .btn-danger {
+      background: #7f1d1d;
+      color: #fecaca;
+    }
+
+    canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 12px;
+      border: 1px solid #27272a;
+      display: block;
+    }
+
+    .progress-wrap {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      transition: width 0.15s;
+    }
+
+    .log-box {
+      background: #050507;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      padding: 12px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      color: #a1a1aa;
+      height: 210px;
+      overflow-y: auto;
+      line-height: 1.55;
+    }
+
+    .log-ok { color: #34d399; }
+    .log-warn { color: #fbbf24; }
+    .log-err { color: #f87171; }
+
+    .folder-box {
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      color: #fbbf24;
+      background: #18181b;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #27272a;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="brand">
+      <h1 style="font-size:17px;">
+        AdobeStock 4K 30fps Studio
+      </h1>
+
+      <span class="badge">
+        4K UHD • 30 FPS • 15s LOOP • H.264 MP4
+      </span>
+    </div>
+
+    <div id="apiStatus" class="status-pill">
+      Checking Gemini API Key...
+    </div>
+  </header>
+
+  <main>
+
+    <section class="card">
+
+      <h2>1. Live Preview &amp; Export Monitor</h2>
+
+      <canvas id="previewCanvas" width="1280" height="720"></canvas>
+
+      <div class="row" style="justify-content: space-between; font-family: Consolas, monospace; font-size: 12px; color: #a1a1aa;">
+        <span id="statusText">
+          Idle — Ready for 4K 30 FPS rendering
+        </span>
+
+        <span id="frameText">
+          Frame 0 / 450
+        </span>
+      </div>
+
+      <div class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div>
+        <label>
+          Direct Windows Output Folder (Auto-Saves 4K MP4 + Adobe Stock CSV)
+        </label>
+
+        <div class="row">
+          <div id="folderDisplay" class="folder-box">
+            Loading folder...
+          </div>
+
+          <button id="chooseFolderBtn" class="btn-secondary">
+            Change Folder
+          </button>
+
+          <button id="openFolderBtn" class="btn-secondary">
+            Open Folder
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label>Automation Log</label>
+        <div id="logBox" class="log-box"></div>
+      </div>
+
+    </section>
+
+    <section class="card">
+
+      <h2>
+        2. Gemini AI Prompts (1 Prompt per Line — Supports 1 to 50 Videos)
+      </h2>
+
+      <textarea
+        id="promptsInput"
+        rows="12"
+        placeholder="Paste 1 to 50 prompts (one per line)..."
+      ></textarea>
+
+      <div class="grid-3">
+
+        <div>
+          <label>Resolution</label>
+
+          <select id="resolutionSelect">
+            <option value="3840x2160" selected>
+              4K UHD (3840x2160)
+            </option>
+
+            <option value="1920x1080">
+              1080p FHD (1920x1080)
+            </option>
+
+            <option value="1080x1920">
+              Vertical 9:16 (1080x1920)
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label>Frame Rate</label>
+
+          <select id="fpsSelect">
+            <option value="30" selected>
+              30 FPS (450 Frames)
+            </option>
+
+            <option value="60">
+              60 FPS (900 Frames)
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label>Bitrate (Mbps)</label>
+
+          <select id="bitrateSelect">
+            <option value="25">
+              25 Mbps
+            </option>
+
+            <option value="35" selected>
+              35 Mbps (4K Std)
+            </option>
+
+            <option value="50">
+              50 Mbps (Master)
+            </option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <button
+          id="startBtn"
+          class="btn-primary"
+          style="flex:1;"
+        >
+          Start 4K 30 FPS Batch Auto-Export
+        </button>
+
+        <button
+          id="stopBtn"
+          class="btn-danger"
+          disabled
+        >
+          Stop
+        </button>
+
+      </div>
+
+      <div class="row">
+
+        <button
+          id="loadSampleBtn"
+          class="btn-secondary"
+          style="flex:1;"
+        >
+          Load 10 Sample 4K Stock Prompts
+        </button>
+
+        <button id="clearBtn" class="btn-secondary">
+          Clear
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../node_modules/mp4-muxer/build/mp4-muxer.js"></script>
+
+  <script type="module" src="./app.js"></script>
+
+</body>
+</html>
